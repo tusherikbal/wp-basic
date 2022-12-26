@@ -1,0 +1,428 @@
+wp theme development
+⦁	convert html extension to php. 
+⦁	style.css file from wp developer. default style.css code add kora. | screenshots.png image add kora. 
+⦁	html er sobgulo file k- ''  get_directory_uri()  '' er maddhome file location deya. 
+⦁	<head> tag er ending tag er agge. <?php wp_head(); ?> ei function dite hbe.
+⦁	<footer> tag sesh hoile    <?php wp_footer(); ?>
+⦁	body tag er majhei <body <?php body_class(); ?> >
+⦁	header part and footer part alada kore nite hbe. 
+⦁	common template gulo alada kore nite hbe. and page er template gulo o alada kore nite hbe. 
+⦁	header part and footer part sobgulo page a include hbe, 
+		- <?php get_header(); ?>
+		- <?php get_footer(); ?>
+		-  template gulor jnno get template directory use kore template include 			kora hbe.
+⦁	ebar css/ js file gulo enque korte hbe. 
+		- Functions.php file a 
+function stack_assets() {
+		// CSS file 
+wp_enqueue_style('bootstrap',get_template_directory_uri().'/assets/css/bootstrap.min.css', array(), '4.0', 'all');
+//theme er default style.css file er jnno:
+wp_enqueue_style( 'style', get_stylesheet_uri() );
+// js file
+wp_enqueue_script('popper', get_template_directory_uri().'/assets/js/popper.min.js', array('jquery'), '1.0', true);
+
+add_action('wp_enqueue_scripts', 'stack_assets');
+		
+// template gulo k name dite hbe and wp dashboard theke page open kore sei template choose korte dite hbe. but kichu default page jmn. index.php eta blog er jnno. single.php eta blog post er jnno egulo follow korte hbe. 
+/*
+Template Name: example template.
+*/
+Menubar select kore dite hbe page unujai. 
+Menu toiri korar jnno. - 
+	functions.php page a 
+function leadership_theme() {
+    register_nav_menus( array(
+        'primary-menu'=>__('Navigation Menu'),
+        'footer-menu'=>__('footer Menu'),
+    ));
+}
+				add_action('after_setup_theme', 'leadership_theme');
+	output hbe: 
+ <?php 
+           			   wp_nav_menu(array(
+              		  'theme_location'=> 'primary-menu',
+            			    'menu_class' => 'css class',
+           		   ));          ?>
+
+Theme Support:
+			Default Theme support for page and post: 
+			add_theme_support( 'post-thumbnails' );
+ 	add_theme_support( 'custom-header' );
+ 	add_theme_support( 'custom-logo' );
+ 	add_theme_support( 'automatic-feed-links' );
+ 	add_theme_support( 'title-tag' );
+	
+
+Logo Dynamic: 
+		logo url: <?php $url = site_url(); ?>
+		title:	<?php wp_title(); ?>
+
+⦁	website er post gulo automatic index.php te show hbe, just template er design ta sajate hbe.
+	ei jnno index.php file a 
+	<?php 
+             	 $
+s= array(
+             	   'post_type' => 'post',
+             	   'post_per_page' => 3,
+              );
+             	   $query= new WP_Query($args);
+              	    while ($query -> have_posts()) {
+              	     $query -> the_post();
+              ?> 
+<---- html part --->
+<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 blog-item">
+            <!-- Blog Item Starts -->
+            <div class="blog-item-wrapper wow fadeInLeft" data-wow-delay="0.3s">
+              <div class="blog-item-img">
+                <a href="<?php the_permalink(); ?>">
+                  <?php the_post_thumbnail(); ?>
+                </a>                
+              </div>
+              <div class="blog-item-text"> 
+                <h3>
+                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                </h3>
+                <p>
+               <?php the_excerpt(); ?>
+                </p>
+                <a href="<?php the_permalink(); ?>" class="btn btn-common btn-rm">Read More</a>
+              </div>
+            </div>
+            <!-- Blog Item Wrapper Ends-->
+          </div>
+
+	<-------close php ----->
+          <?php  };  ?>
+
+
+
+Single.php
+	ekhane html template onujai 
+	<?php the_title(); ?>
+	<?php the_content(); ?>
+	<?php  the_permalink(); ?>
+	<?php the_author_meta('display_name', 1); ?>  
+	//authro id use kortei hbe. proyojon a loop use korte hbe.
+
+	<?php echo get_the_date(); ?>
+
+Comments:
+comments.php
+	<?php
+/**
+ * The template for displaying Comments.
+ *
+ * The area of the page that contains comments and the comment form.
+ *
+ * @package WordPress
+ * @subpackage Twenty_Thirteen
+ * @since Twenty Thirteen 1.0
+ */
+
+/*
+ * If the current post is protected by a password and the visitor has not yet
+ * entered the password we will return early without loading the comments.
+ */
+
+if ( post_password_required() )
+	return;
+?>
+
+<div id="comments" class="comments-area">
+
+	<?php if ( have_comments() ) : ?>
+		<h2 class="comments-title">
+			<?php
+				printf( _nx( 'One thought on "%2$s"', '%1$s thoughts on "%2$s"', get_comments_number(), 'comments title', 'wp_haleem' ),
+					number_format_i18n( get_comments_number() ), '<span>' . get_the_title() . '</span>' );
+			?>
+		</h2>
+
+		<ol class="comment-list">
+			<?php
+				wp_list_comments( array(
+					'style'       => 'ol',
+					'short_ping'  => true,
+					'avatar_size' => 74,
+				) );
+			?>
+		</ol><!-- .comment-list -->
+
+		<?php
+			// Are there comments to navigate through?
+			if ( get_comment_pages_count() > 1 && get_option( 'page_comments' ) ) :
+		?>
+		<nav class="navigation comment-navigation" role="navigation">
+			<h1 class="screen-reader-text section-heading"><?php __( 'Comment navigation', 'wp_haleem' ); ?></h1>
+			<div class="nav-previous"><?php previous_comments_link( __( '&larr; Older Comments', 'wp_haleem' ) ); ?></div>
+			<div class="nav-next"><?php next_comments_link( __( 'Newer Comments &rarr;', 'wp_haleem' ) ); ?></div>
+		</nav><!-- .comment-navigation -->
+		<?php endif; // Check for comment navigation ?>
+
+		<?php if ( ! comments_open() && get_comments_number() ) : ?>
+		<p class="no-comments"><?php __( 'Comments are closed.' , 'wp_haleem' ); ?></p>
+		<?php endif; ?>
+
+	<?php endif; // have_comments() ?>
+
+	<?php comment_form(); ?>
+
+</div><!-- #comments -->
+==========================
+// functions.php file a comments er jnno ei field gulo asbe. 
+
+function move_comment_field( $fields ) {
+    $comment_field = $fields['comment'];
+    unset( $fields['comment'] );
+    $fields['comment'] = $comment_field;
+    return $fields;
+}
+add_filter( 'comment_form_fields', 'move_comment_field' );
+
+// comment field placeholder
+function wpse_62742_comment_placeholders( $fields )
+{
+    $fields['author'] = str_replace(
+        '<input',
+        '<input placeholder="'
+            . _x(
+                'Your name',
+                'comment form placeholder',
+                'theme_text_domain'
+                )
+            . '"',
+        $fields['author']
+    );
+    $fields['email'] = str_replace(
+        '<input id="email" name="email" type="text"',
+        /* We use a proper type attribute to make use of the browser’s
+         * validation, and to get the matching keyboard on smartphones.
+         */
+        '<input type="email" placeholder="mail@youremail.com"  id="email" name="email"',
+        $fields['email']
+    );
+    $fields['url'] = str_replace(
+        '<input id="url" name="url" type="text"',
+        // Again: a better 'type' attribute value.
+        '<input placeholder="your website link" id="url" name="url" type="url"',
+        $fields['url']
+    );
+    return $fields;
+}
+add_filter( 'comment_form_default_fields', 'wpse_62742_comment_placeholders' );
+//for field type textarea | comment box
+function placeholder_comment_form_field($fields) {
+    $replace_comment = __('Your Comment', 'yourdomain');
+    $fields['comment_field'] = '<p class="comment-form-comment"><label for="comment">' . _x( 'Comment', 'noun' ) .
+    '</label><textarea id="comment" name="comment" cols="45" rows="8" placeholder="'.$replace_comment.'" aria-required="true"></textarea></p>';
+    return $fields;
+ }
+
+add_filter( 'comment_form_defaults', 'placeholder_comment_form_field' );
+
+
+***************
+Query:
+- konno post/product query korar way -
+- index.php page a default post theke post gulo k query korar jnno. 
+
+ <?php 
+                
+                $args= array(
+                    'post_type' => 'post',
+                    'posts_per_page' => 3,
+                ); 
+
+                $query = new WP_Query($args);
+                while ($query -> have_posts()) {
+                    $query -> the_post();
+			'meta_value' =>  
+                    'meta_key' => 
+                    
+                    ?>
+
+-----------------------
+---------- html content ------------
+-----------------------------------
+
+<?php 
+	}
+
+wp_reset_postdata();
+?>
+
+
+widgets:
+	widget enable:
+			
+function wpdocs_theme_slug_widgets_init() {
+	register_sidebar( array(
+		'name'          => __( 'Main Sidebar', 'textdomain' ),
+		'id'            => 'sidebar-1',
+		'description'   => __( 'Widgets in this area will be shown on all posts and pages.', 'textdomain' ),
+		'before_widget' => '<li id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</li>',
+		'before_title'  => '<h2 class="widgettitle">',
+		'after_title'   => '</h2>',
+	) );
+}
+add_action( 'widgets_init', 'wpdocs_theme_slug_widgets_init' );
+
+
+output:
+  <?php dynamic_sidebar( 'sidebar-1' ); ?>
+======================================
+
+
+
+
+
+- gutenbarg disable korar jnno. 
+//disbale gutenbarg. 
+// Disables the block editor from managing widgets in the Gutenberg plugin.
+add_filter( 'gutenberg_use_widgets_block_editor', '__return_false' );
+// Disables the block editor from managing widgets.
+add_filter( 'use_widgets_block_editor', '__return_false' );
+
+
+
+Acf diye widget creation:
+function.php
+class Latest_Post extends WP_Widget { 
+    function __construct() {
+ 
+        parent::__construct(
+            'latest-post-widget',  // Base ID
+            __('Latest Post Widget')   // Name
+        );
+ 
+        add_action( 'widgets_init', function() {
+            register_widget( 'Latest_Post' );
+        });
+ 
+    }
+ 
+    public function widget( $args, $instance ) {
+ 
+	//acf er widget er id gulo eivabei neya hoy.
+
+        $widget_id = 'widget_'. $args['widget_id'];
+        $post_show_count = get_field('post_number', $widget_id);
+        $post_order = get_field('post_sorting', $widget_id);
+        $show_the_date = get_field('show_the_date', $widget_id);
+       
+       
+        if ( ! empty( $instance['title'] ) ) {
+            echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
+        } 
+        ?>
+            <div class="sidebar-post">
+
+	//post query kora hocche. 
+
+            <?php
+                $args = array(
+                    'post_type' => 'post',
+                    'posts_per_page' => $post_show_count,
+                    'order' => $post_order
+                );
+
+                $query = new WP_Query($args);
+                while($query->have_posts()) {
+                    $query->the_post();
+                
+                   
+                ?>
+	
+	// html block. sidebar er ei block ta tei acf field diye dynamic kora hoyeche
+                    <div class="single-post">
+                        <div class="img-box"><a href="<?php the_permalink();?>"><figure><img src="<?php the_post_thumbnail_url();?>" alt=""></figure></a></div>
+                        <h6><a href="<?php the_permalink();?>"><?php the_title();?></a></h6>
+                        <?php  
+                                if ($show_the_date == 'yes') {
+                                    ?>
+                        <div class="text"><?php the_date(); ?>
+                        </div>
+                                    <?php
+                                }
+                        ?>
+                        
+                    </div>
+                <?php
+                }
+            ?>
+                
+            </div>
+        <?php
+ 
+    }
+ 
+    public function form( $instance ) {
+ 
+        $title = ! empty( $instance['title'] ) ? $instance['title'] : esc_html__( '', 'belfast' );
+        ?>
+        <p>
+        <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php echo esc_html__( 'Title:', 'text_domain' ); ?></label>
+            <input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
+        </p>
+        <?php
+ 
+    }
+ 
+    public function update( $new_instance, $old_instance ) {
+ 
+        $instance = array();
+ 
+        $instance['title'] = ( !empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+ 
+        return $instance;
+    }
+ 
+}
+$latest_post = new Latest_Post();
+
+
+============
+html er sidebar a ei block ta use hbe. (widget er id soho ei block ta e show hbe. 
+
+       <?php dynamic_sidebar( 'sidebar-1' ); ?>
+==========================================
+
+
+Image with alter tag:
+<?php  the_post_thumbnail('large', array( 'title' => get_the_title() )); ?>
+-----------------
+
+wp excerpt limit function
+function wpdocs_custom_excerpt_length( $length ) {
+	return 20;
+}
+add_filter( 'excerpt_length', 'wpdocs_custom_excerpt_length', 999 );
+
+
+
+Get comments number: 
+echo get_comments_number($post->ID);
+
+template parts include korar jnno:
+      <?php get_template_part('template-parts/sections','feature'); ?>
+
+//post title trim:
+       function limit_word_count($title) {
+        $len = 5; //change this to the number of words
+        if (str_word_count($title) > $len) {
+            $keys = array_keys(str_word_count($title, 2));
+            $title = substr($title, 0, $keys[$len]);
+        }
+        return $title;
+    }
+    add_filter('the_title', 'limit_word_count');
+
+
+
+
+
+
+
+
+ 
